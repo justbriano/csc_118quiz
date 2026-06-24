@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Software & Programming Exam Prep</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Tailwind gray-100 */
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Custom scrollbar for the review section */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8; 
+        }
+    </style>
+</head>
+<body class="text-gray-800 antialiased min-h-screen flex items-center justify-center p-4 sm:p-8">
+
+    <div id="app" class="w-full max-w-4xl bg-white rounded-2xl shadow-xl overflow-hidden relative min-h-[500px] flex flex-col">
+        
+        <!-- Welcome Screen -->
+        <div id="welcome-screen" class="p-8 sm:p-12 flex flex-col items-center justify-center text-center flex-grow fade-in">
+            <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mb-6 shadow-inner">
+                <svg class="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+            </div>
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Ultimate Exam Prep</h1>
+            <p class="text-lg text-gray-600 mb-8 max-w-lg">
+                Let's get you prepared for your CSC 118 exam. Here are a bunch of 80 questions specially curated from the tutorial questions document.<br><br>
+                <span class="font-medium italic text-gray-800">With love, Brian</span>
+            </p>
+            <button id="start-btn" class="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white text-lg font-semibold rounded-xl shadow-lg transition-transform transform hover:scale-105 active:scale-95">
+                Start the Ultimate Exam
+            </button>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="hidden flex-col h-full flex-grow fade-in">
+            <!-- Header & Progress -->
+            <div class="bg-gray-50 border-b border-gray-200 p-4 sm:p-6">
+                <div class="flex justify-between items-center mb-3">
+                    <span id="topic-badge" class="px-3 py-1 bg-blue-100 text-blue-700 text-sm font-semibold rounded-full uppercase tracking-wide">Topic</span>
+                    <span class="text-sm font-medium text-gray-500">Score: <span id="score-display" class="text-gray-900 font-bold">0</span></span>
+                </div>
+                <div class="flex justify-between items-center text-sm font-medium text-gray-500 mb-2">
+                    <span id="question-counter">Question 1 of 80</span>
+                    <span id="percentage-display">0% Completed</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                    <div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Question Area -->
+            <div class="p-6 sm:p-8 flex-grow">
+                <h2 id="question-text" class="text-xl sm:text-2xl font-semibold text-gray-900 mb-6 leading-relaxed">
+                    Loading question...
+                </h2>
+                <div id="options-container" class="space-y-3">
+                    <!-- Options injected here via JS -->
+                </div>
+            </div>
+
+            <!-- Footer Area -->
+            <div class="p-4 sm:p-6 border-t border-gray-100 flex justify-end bg-gray-50">
+                <button id="next-btn" class="hidden px-6 py-3 bg-gray-900 hover:bg-black text-white font-medium rounded-lg shadow transition-colors">
+                    Next Question &rarr;
+                </button>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="results-screen" class="hidden flex-col h-full p-6 sm:p-10 fade-in flex-grow">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Exam Completed!</h2>
+                <p id="final-score-text" class="text-lg text-gray-600">You scored <span class="font-bold text-blue-600">0</span> out of 80.</p>
+                <div id="performance-message" class="mt-4 inline-block px-4 py-2 rounded-lg font-semibold text-lg">
+                    <!-- Dynamic message -->
+                </div>
+            </div>
+
+            <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">Review Your Mistakes</h3>
+            <div id="mistakes-container" class="flex-grow overflow-y-auto max-h-[400px] space-y-4 pr-2 mb-6">
+                <!-- Mistakes injected here -->
+            </div>
+
+            <div class="text-center pt-4 border-t border-gray-200">
+                <button id="restart-btn" class="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow transition-colors">
+                    Retake Exam
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Comprehensive 80 Question Dataset
+        const quizData = [
+            // --- MATLAB BASICS (16 Questions) ---
+            { topic: "MATLAB Basics", q: "What is MATLAB mainly used for?", options: ["Cooking recipes", "Writing books", "Math and programming", "Making phone calls"], correct: 2 },
+            { topic: "MATLAB Basics", q: "What does MATLAB stand for?", options: ["Math Language", "Matrix Laboratory", "Machine Lab", "Math Toolbox"], correct: 1 },
+            { topic: "MATLAB Basics", q: "Which symbol is used to write comments in MATLAB?", options: ["#", "//", "%", "&"], correct: 2 },
+            { topic: "MATLAB Basics", q: "Which one is a valid MATLAB variable name?", options: ["2data", "data_1", "data-1", "datA. 1"], correct: 1 },
+            { topic: "MATLAB Basics", q: "How do you display text in MATLAB?", options: ["print()", "display()", "echo()", "disp()"], correct: 3 },
+            { topic: "MATLAB Basics", q: "How do you create a row vector with numbers 1 to 3?", options: ["[1, 2, 3]", "{1, 2, 3}", "(1, 2, 3)", "[[123]]"], correct: 0 },
+            { topic: "MATLAB Basics", q: "What does 'clear' do in MATLAB?", options: ["Turns off the computer", "Deletes files", "Removes variables from memory", "Cleans the screen"], correct: 2 },
+            { topic: "MATLAB Basics", q: "Which command shows the current folder files?", options: ["folder", "dir", "files", "show"], correct: 1 },
+            { topic: "MATLAB Basics", q: "What does 'clc' do in MATLAB?", options: ["Clears the workspace", "Clears the command window", "Closes MATLAB", "Clears all files"], correct: 1 },
+            { topic: "MATLAB Basics", q: "What is the value of 2 + 3 * 4 in MATLAB?", options: ["20", "14", "10", "24"], correct: 1 },
+            { topic: "MATLAB Basics", q: "How do you start a script in MATLAB?", options: ["With script start", "By typing code in the Editor and saving it as .m", "By using run code", "Clicking a file with .txt"], correct: 1 },
+            { topic: "MATLAB Basics", q: "Which file extension is used for MATLAB scripts?", options: [".txt", ".docx", ".m", ".exe"], correct: 2 },
+            { topic: "MATLAB Basics", q: "What is the result of sqrt(16)?", options: ["2", "4", "8", "16"], correct: 1 },
+            { topic: "MATLAB Basics", q: "Which command gives you help on a function?", options: ["ask()", "help", "info()", "read()"], correct: 1 },
+            { topic: "MATLAB Basics", q: "How do you assign the value 5 to a variable x?", options: ["x is 5", "x <- 5", "x = 5", "x := 5"], correct: 2 },
+            { topic: "MATLAB Basics", q: "How do you end a function or loop in MATLAB?", options: ["finish", "stop", "done", "end"], correct: 3 },
+
+            // --- R & RSTUDIO BASICS (16 Questions) ---
+            { topic: "R & RStudio Basics", q: "What is R mainly used for?", options: ["Drawing cartoons", "Video editing", "Statistical computing and graphics", "Cooking"], correct: 2 },
+            { topic: "R & RStudio Basics", q: "What is RStudio?", options: ["A video game", "An IDE for R programming", "A mobile app", "A browser extension"], correct: 1 },
+            { topic: "R & RStudio Basics", q: "How do you assign a value to a variable in R?", options: ["x = 5", "x <- 5", "x := 5", "x == 5"], correct: 1 },
+            { topic: "R & RStudio Basics", q: "How do you print something in R?", options: ["echo()", "print()", "display()", "write()"], correct: 1 },
+            { topic: "R & RStudio Basics", q: "What symbol is used for comments in R?", options: ["//", "%", "#", "--"], correct: 2 },
+            { topic: "R & RStudio Basics", q: "Which of the following is a valid vector in R?", options: ["c(1, 2, 3)", "[1, 2, 3]", "{1, 2, 3}", "1;2;3"], correct: 0 },
+            { topic: "R & RStudio Basics", q: "Which function is used to get help in R?", options: ["gethelp()", "help()", "support()", "info()"], correct: 1 },
+            { topic: "R & RStudio Basics", q: "Which RStudio panel shows your written scripts?", options: ["Console", "Environment", "Source/Editor", "Files"], correct: 2 },
+            { topic: "R & RStudio Basics", q: "What does the length() function do?", options: ["Adds numbers", "Counts elements in a vector", "Creates vectors", "Multiplies values"], correct: 1 },
+            { topic: "R & RStudio Basics", q: "What is the output of sum(1, 2, 3)?", options: ["123", "6", "5", "Error"], correct: 1 },
+            { topic: "R & RStudio Basics", q: "How do you install a package in R?", options: ["install(package)", "install.packages(\"package\")", "add.package(\"package\")", "library(package)"], correct: 1 },
+            { topic: "R & RStudio Basics", q: "Which function loads a package in R?", options: ["run()", "include()", "load()", "library()"], correct: 3 },
+            { topic: "R & RStudio Basics", q: "Which data structure stores data in rows and columns?", options: ["Vector", "List", "Data frame", "Matrix"], correct: 2 },
+            { topic: "R & RStudio Basics", q: "How do you check the structure of a data frame?", options: ["head()", "structure()", "str()", "frame()"], correct: 2 },
+            { topic: "R & RStudio Basics", q: "How do you read a CSV file into R?", options: ["read.csv(\"file.csv\")", "import.csv(\"file.csv\")", "csv.read(\"file.csv\")", "file(\"file.csv\")"], correct: 0 },
+            { topic: "R & RStudio Basics", q: "Which button runs the selected code in RStudio?", options: ["Run", "Save", "Source", "Edit"], correct: 0 },
+
+            // --- GOOGLE COLAB BASICS (16 Questions) ---
+            { topic: "Google Colab Basics", q: "What is Google Colab used for?", options: ["Video editing", "Writing stories", "Writing and running Python code", "Playing games"], correct: 2 },
+            { topic: "Google Colab Basics", q: "Which programming language is most commonly used in Google Colab?", options: ["Java", "Python", "C++", "Ruby"], correct: 1 },
+            { topic: "Google Colab Basics", q: "Where are Google Colab notebooks stored by default?", options: ["Your desktop", "Your email", "Google Drive", "A USB stick"], correct: 2 },
+            { topic: "Google Colab Basics", q: "What file extension does a Colab notebook have?", options: [".txt", ".docx", ".ipynb", ".csv"], correct: 2 },
+            { topic: "Google Colab Basics", q: "What is a 'cell' in Google Colab?", options: ["A folder", "A Python package", "A section to write and run code or text", "A battery"], correct: 2 },
+            { topic: "Google Colab Basics", q: "Which button do you click to run a code cell in Colab?", options: ["Play", "Stop", "Save", "Share"], correct: 0 },
+            { topic: "Google Colab Basics", q: "Which menu allows you to add a new code or text cell?", options: ["File", "View", "Insert", "Runtime"], correct: 2 },
+            { topic: "Google Colab Basics", q: "How do you add a comment in Python in Colab?", options: ["//", "<!-- -->", "#", "/**/"], correct: 2 },
+            { topic: "Google Colab Basics", q: "How can you share a Colab notebook with someone?", options: ["By printing it", "By giving them your password", "By using the Share button", "By emailing Google"], correct: 2 },
+            { topic: "Google Colab Basics", q: "Which shortcut runs the current cell in Google Colab?", options: ["Ctrl + S", "Shift + Enter", "Alt + F4", "Ctrl + P"], correct: 1 },
+            { topic: "Google Colab Basics", q: "What is the purpose of the 'Text' cell in Colab?", options: ["To store data", "To install packages", "To write explanations or notes (Markdown)", "To run HTML"], correct: 2 },
+            { topic: "Google Colab Basics", q: "What does '!pip install' do in a Colab notebook?", options: ["Uploads a file", "Shuts down the notebook", "Installs a Python package", "Deletes a variable"], correct: 2 },
+            { topic: "Google Colab Basics", q: "What type of hardware acceleration can Google Colab provide?", options: ["SSD", "USB", "GPU", "RAM stick"], correct: 2 },
+            { topic: "Google Colab Basics", q: "How do you import a library in Colab?", options: ["include library_name", "open library_name", "import library_name", "install library_name"], correct: 2 },
+            { topic: "Google Colab Basics", q: "What is the purpose of the 'Runtime' menu in Colab?", options: ["To buy credits", "To change font", "To run or restart code", "To update Chrome"], correct: 2 },
+            { topic: "Google Colab Basics", q: "What does print(\"Hello, world!\") do in Colab?", options: ["Crashes the notebook", "Displays Hello, world!", "Sends an email", "Opens a new tab"], correct: 1 },
+
+            // --- MICROSOFT EXCEL BASICS (16 Questions) ---
+            { topic: "Microsoft Excel Basics", q: "What is Microsoft Excel mainly used for?", options: ["Drawing pictures", "Editing videos", "Creating and organizing spreadsheets", "Writing books"], correct: 2 },
+            { topic: "Microsoft Excel Basics", q: "What is a cell in Excel?", options: ["A type of battery", "A page in a document", "A single box in a spreadsheet", "A formula"], correct: 2 },
+            { topic: "Microsoft Excel Basics", q: "What is the default file extension for an Excel workbook?", options: [".docx", ".xlsx", ".pptx", ".txt"], correct: 1 },
+            { topic: "Microsoft Excel Basics", q: "Which symbol is used to start a formula in Excel?", options: ["=", "+", "@", "#"], correct: 0 },
+            { topic: "Microsoft Excel Basics", q: "What is the intersection of a row and a column called?", options: ["Point", "Graph", "Cell", "Box"], correct: 2 },
+            { topic: "Microsoft Excel Basics", q: "Which of the following is an Excel formula?", options: ["SUM(A1:A5)", "total A1 to A5", "add A1 A5", "plus(A1:A5)"], correct: 0 },
+            { topic: "Microsoft Excel Basics", q: "What is a worksheet in Excel?", options: ["A single document inside a workbook", "A PDF file", "A Microsoft Word page", "A type of email"], correct: 0 },
+            { topic: "Microsoft Excel Basics", q: "How are Excel columns labeled?", options: ["Numbers", "Colors", "Letters (A, B, C, ...)", "Roman numerals"], correct: 2 },
+            { topic: "Microsoft Excel Basics", q: "How are Excel rows labeled?", options: ["Letters", "Words", "Numbers (1, 2, 3, ...)", "Symbols"], correct: 2 },
+            { topic: "Microsoft Excel Basics", q: "What does the AutoSum button do?", options: ["Deletes data", "Automatically adds a range of numbers", "Formats cells", "Finds text"], correct: 1 },
+            { topic: "Microsoft Excel Basics", q: "What is the function of the 'Merge & Center' button?", options: ["Adds numbers", "Hides rows", "Combines multiple cells and centers the content", "Deletes cells"], correct: 2 },
+            { topic: "Microsoft Excel Basics", q: "Which function finds the average of numbers?", options: ["SUM()", "MAX()", "AVG()", "AVERAGE()"], correct: 3 },
+            { topic: "Microsoft Excel Basics", q: "What key is used to move to the next cell on the right?", options: ["Enter", "Shift", "Tab", "Backspace"], correct: 2 },
+            { topic: "Microsoft Excel Basics", q: "What does the Fill Handle help you do?", options: ["Move the cursor", "Copy cell contents to nearby cells", "Resize the window", "Change font color"], correct: 1 },
+            { topic: "Microsoft Excel Basics", q: "Which function returns the highest number in a list?", options: ["MIN()", "LARGE()", "MAX()", "HIGH()"], correct: 2 },
+            { topic: "Microsoft Excel Basics", q: "What is the keyboard shortcut to save your Excel workbook?", options: ["Ctrl + X", "Ctrl + V", "Ctrl + S", "Ctrl + P"], correct: 2 },
+
+            // --- MICROSOFT WORD BASICS (16 Questions) ---
+            { topic: "Microsoft Word Basics", q: "What is Microsoft Word used for?", options: ["Playing games", "Creating presentations", "Writing and editing documents", "Watching videos"], correct: 2 },
+            { topic: "Microsoft Word Basics", q: "What is the file extension for a Word document?", options: [".xls", ".pptx", ".docx", ".pdf"], correct: 2 },
+            { topic: "Microsoft Word Basics", q: "Which key is used to start a new paragraph?", options: ["Shift", "Spacebar", "Enter", "Tab"], correct: 2 },
+            { topic: "Microsoft Word Basics", q: "How can you make text bold in Word?", options: ["Ctrl + U", "Ctrl + I", "Ctrl + B", "Ctrl + S"], correct: 2 },
+            { topic: "Microsoft Word Basics", q: "What does the 'Save' button do?", options: ["Prints the file", "Deletes the file", "Stores changes to the file", "Sends the file"], correct: 2 },
+            { topic: "Microsoft Word Basics", q: "Which button is used to undo an action?", options: ["Redo", "Save", "Backspace", "Undo"], correct: 3 },
+            { topic: "Microsoft Word Basics", q: "How can you underline text in Word?", options: ["Ctrl + B", "Ctrl + I", "Ctrl + U", "Ctrl + Z"], correct: 2 },
+            { topic: "Microsoft Word Basics", q: "What is the blinking vertical line in Word called?", options: ["Cursor", "Dot", "Symbol", "Pointer"], correct: 0 },
+            { topic: "Microsoft Word Basics", q: "What does 'Cut' do in Word?", options: ["Saves the file", "Copies and pastes", "Removes the text and puts it on the clipboard", "Prints the text"], correct: 2 },
+            { topic: "Microsoft Word Basics", q: "What is the shortcut for 'Copy'?", options: ["Ctrl + V", "Ctrl + C", "Ctrl + X", "Ctrl + A"], correct: 1 },
+            { topic: "Microsoft Word Basics", q: "How can you change the page orientation in Word?", options: ["View tab", "Layout tab", "Insert tab", "File tab"], correct: 1 },
+            { topic: "Microsoft Word Basics", q: "Which tool checks spelling and grammar?", options: ["Format", "Insert", "Review", "Home"], correct: 2 },
+            { topic: "Microsoft Word Basics", q: "Which option aligns text to the center?", options: ["Left Align", "Right Align", "Justify", "Center Align"], correct: 3 },
+            { topic: "Microsoft Word Basics", q: "How do you select all text in a document?", options: ["Ctrl + A", "Ctrl + S", "Ctrl + Z", "Ctrl + B"], correct: 0 },
+            { topic: "Microsoft Word Basics", q: "What does the 'Zoom' feature do?", options: ["Changes text color", "Enlarges or reduces the view of the page", "Adds a picture", "Deletes text"], correct: 1 },
+            { topic: "Microsoft Word Basics", q: "What is the shortcut to open a new document?", options: ["Ctrl + N", "Ctrl + P", "Ctrl + O", "Ctrl + Q"], correct: 0 }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let hasAnswered = false;
+        let mistakes = []; // To store { question, selected, correct } for review
+
+        // DOM Elements
+        const welcomeScreen = document.getElementById('welcome-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultsScreen = document.getElementById('results-screen');
+        
+        const startBtn = document.getElementById('start-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const restartBtn = document.getElementById('restart-btn');
+
+        const topicBadge = document.getElementById('topic-badge');
+        const scoreDisplay = document.getElementById('score-display');
+        const questionCounter = document.getElementById('question-counter');
+        const percentageDisplay = document.getElementById('percentage-display');
+        const progressBar = document.getElementById('progress-bar');
+        
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+
+        startBtn.addEventListener('click', startQuiz);
+        nextBtn.addEventListener('click', loadNextQuestion);
+        restartBtn.addEventListener('click', resetQuiz);
+
+        function startQuiz() {
+            welcomeScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            quizScreen.classList.add('flex');
+            
+            // Optional: Shuffle the questions for a real exam feel
+            // quizData.sort(() => Math.random() - 0.5); 
+            // We'll keep them in order of topic for structural learning as requested.
+
+            currentQuestionIndex = 0;
+            score = 0;
+            mistakes = [];
+            updateUI();
+        }
+
+        function updateUI() {
+            hasAnswered = false;
+            nextBtn.classList.add('hidden');
+            
+            const currentQ = quizData[currentQuestionIndex];
+            
+            // Update Headers & Progress
+            topicBadge.innerText = currentQ.topic;
+            scoreDisplay.innerText = score;
+            questionCounter.innerText = `Question ${currentQuestionIndex + 1} of ${quizData.length}`;
+            
+            const percent = ((currentQuestionIndex) / quizData.length) * 100;
+            percentageDisplay.innerText = `${Math.round(percent)}% Completed`;
+            progressBar.style.width = `${percent}%`;
+
+            // Update Question
+            questionText.innerText = currentQ.q;
+            
+            // Render Options
+            optionsContainer.innerHTML = '';
+            currentQ.options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'w-full text-left p-4 rounded-xl border-2 border-gray-200 bg-white hover:border-blue-400 hover:bg-blue-50 transition-all font-medium text-gray-700 focus:outline-none';
+                
+                // Add Alphabet prefix (A, B, C, D)
+                const prefix = String.fromCharCode(65 + index);
+                btn.innerHTML = `<span class="font-bold mr-3 text-gray-400">${prefix}.</span> ${option}`;
+                
+                btn.onclick = () => handleAnswerClick(btn, index, currentQ);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function handleAnswerClick(clickedBtn, selectedIndex, currentQ) {
+            if (hasAnswered) return; // Prevent multiple clicks
+            hasAnswered = true;
+
+            const allBtns = optionsContainer.querySelectorAll('button');
+            const isCorrect = selectedIndex === currentQ.correct;
+
+            if (isCorrect) {
+                score++;
+                scoreDisplay.innerText = score;
+                clickedBtn.classList.remove('border-gray-200', 'hover:border-blue-400', 'hover:bg-blue-50');
+                clickedBtn.classList.add('border-green-500', 'bg-green-50', 'text-green-800');
+                clickedBtn.innerHTML += ` <span class="float-right text-green-600 font-bold">✓</span>`;
+            } else {
+                clickedBtn.classList.remove('border-gray-200', 'hover:border-blue-400', 'hover:bg-blue-50');
+                clickedBtn.classList.add('border-red-500', 'bg-red-50', 'text-red-800');
+                clickedBtn.innerHTML += ` <span class="float-right text-red-600 font-bold">✗</span>`;
+                
+                // Record mistake
+                mistakes.push({
+                    topic: currentQ.topic,
+                    question: currentQ.q,
+                    selected: currentQ.options[selectedIndex],
+                    correct: currentQ.options[currentQ.correct]
+                });
+            }
+
+            // Always highlight the correct answer
+            const correctBtn = allBtns[currentQ.correct];
+            if (!isCorrect) {
+                correctBtn.classList.remove('border-gray-200');
+                correctBtn.classList.add('border-green-500', 'bg-green-50');
+            }
+
+            // Disable all buttons
+            allBtns.forEach(btn => {
+                btn.style.cursor = 'default';
+                if(btn !== clickedBtn && btn !== correctBtn) {
+                    btn.classList.add('opacity-50');
+                }
+            });
+
+            // Change button text if it's the last question
+            if (currentQuestionIndex === quizData.length - 1) {
+                nextBtn.innerText = "See Final Results";
+                nextBtn.classList.replace('bg-gray-900', 'bg-blue-600');
+                nextBtn.classList.replace('hover:bg-black', 'hover:bg-blue-700');
+            }
+
+            nextBtn.classList.remove('hidden');
+        }
+
+        function loadNextQuestion() {
+            currentQuestionIndex++;
+            
+            if (currentQuestionIndex < quizData.length) {
+                updateUI();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            quizScreen.classList.add('hidden');
+            quizScreen.classList.remove('flex');
+            resultsScreen.classList.remove('hidden');
+            resultsScreen.classList.add('flex');
+
+            document.getElementById('final-score-text').innerHTML = `You scored <span class="font-bold text-blue-600 text-2xl">${score}</span> out of ${quizData.length}.`;
+            
+            const percentage = (score / quizData.length) * 100;
+            const messageEl = document.getElementById('performance-message');
+            
+            if (percentage >= 90) {
+                messageEl.innerText = "Excellent work! You are ready to ace this exam! 🏆";
+                messageEl.className = "mt-4 inline-block px-4 py-2 rounded-lg font-semibold text-lg bg-green-100 text-green-800";
+            } else if (percentage >= 70) {
+                messageEl.innerText = "Great job! Just a little review and you'll be perfect. 👍";
+                messageEl.className = "mt-4 inline-block px-4 py-2 rounded-lg font-semibold text-lg bg-blue-100 text-blue-800";
+            } else {
+                messageEl.innerText = "Keep studying! Review your mistakes below to improve. 📚";
+                messageEl.className = "mt-4 inline-block px-4 py-2 rounded-lg font-semibold text-lg bg-yellow-100 text-yellow-800";
+            }
+
+            // Render mistakes for review
+            const mistakesContainer = document.getElementById('mistakes-container');
+            mistakesContainer.innerHTML = '';
+            
+            if (mistakes.length === 0) {
+                mistakesContainer.innerHTML = `<div class="p-6 text-center text-gray-500 italic bg-gray-50 rounded-lg">Flawless victory! No mistakes to review.</div>`;
+            } else {
+                mistakes.forEach((mistake, i) => {
+                    mistakesContainer.innerHTML += `
+                        <div class="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                            <span class="text-xs font-bold uppercase text-blue-600 mb-1 block">${mistake.topic}</span>
+                            <p class="font-semibold text-gray-900 mb-2">${i+1}. ${mistake.question}</p>
+                            <p class="text-sm text-red-600 mb-1"><span class="font-bold">You answered:</span> ${mistake.selected}</p>
+                            <p class="text-sm text-green-600"><span class="font-bold">Correct answer:</span> ${mistake.correct}</p>
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        function resetQuiz() {
+            resultsScreen.classList.add('hidden');
+            resultsScreen.classList.remove('flex');
+            
+            // Reset next button styling in case it was changed
+            nextBtn.innerText = "Next Question →";
+            nextBtn.classList.replace('bg-blue-600', 'bg-gray-900');
+            nextBtn.classList.replace('hover:bg-blue-700', 'hover:bg-black');
+            
+            startQuiz();
+        }
+
+    </script>
+</body>
+</html>
